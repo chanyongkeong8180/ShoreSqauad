@@ -1,0 +1,81 @@
+{
+  "name": "ShoreSquad - Beach Cleanup Community",
+  "short_name": "ShoreSquad",
+  "description": "Rally your crew, track weather, and hit the next beach cleanup with our dope map app!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0077be",
+  "theme_color": "#0077be",
+  "orientation": "portrait-primary",
+  "categories": ["social", "lifestyle", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230077be'/><circle cx='96' cy='96' r='60' fill='%23ffffff'/><path d='M96 56c22 0 40 18 40 40s-18 40-40 40-40-18-40-40 18-40 40-40z' fill='%234a90e2'/><circle cx='85' cy='85' r='5' fill='%230077be'/><circle cx='107' cy='85' r='5' fill='%230077be'/><path d='M85 105c3 8 8 8 11 8s8 0 11-8z' fill='%230077be'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230077be'/><circle cx='256' cy='256' r='160' fill='%23ffffff'/><path d='M256 136c66 0 120 54 120 120s-54 120-120 120-120-54-120-120 54-120 120-120z' fill='%234a90e2'/><circle cx='230' cy='230' r='15' fill='%230077be'/><circle cx='282' cy='230' r='15' fill='%230077be'/><path d='M230 290c8 20 18 20 26 20s18 0 26-20z' fill='%230077be'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect width='1280' height='720' fill='%230077be'/><text x='640' y='360' text-anchor='middle' fill='white' font-size='48' font-family='Arial'>ShoreSquad Desktop View</text></svg>",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "ShoreSquad desktop view showing beach cleanup map and events"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 750 1334'><rect width='750' height='1334' fill='%230077be'/><text x='375' y='667' text-anchor='middle' fill='white' font-size='36' font-family='Arial'>ShoreSquad Mobile</text></svg>",
+      "sizes": "750x1334",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "ShoreSquad mobile view optimized for on-the-go beach cleanup coordination"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find Cleanups",
+      "short_name": "Find",
+      "description": "Find beach cleanup events near you",
+      "url": "/#map",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%230077be' d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Weather Check",
+      "short_name": "Weather",
+      "description": "Check weather conditions for cleanup",
+      "url": "/#weather",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%230077be' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope": "/",
+  "id": "shoresquad-pwa",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+}

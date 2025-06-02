@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather System Test - ShoreSquad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .weather-display {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .forecast-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .debug-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 10px 0;
+        }
+        .error {
+            color: red;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌤️ Weather System Test</h1>
+        <p>Testing NEA Singapore weather API integration for ShoreSquad</p>
+        
+        <div class="debug-section">
+            <h3>Test Controls</h3>
+            <button onclick="testTemperatureAPI()">Test Temperature API</button>
+            <button onclick="test4DayForecast()">Test 4-Day Forecast</button>
+            <button onclick="test24HourForecast()">Test 24-Hour Forecast</button>
+            <button onclick="testAllAPIs()">Test All APIs</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="results"></div>
+        
+        <div class="weather-display">
+            <h3>Current Weather Data</h3>
+            <div id="weather-output">
+                <p>Click "Test All APIs" to load weather data...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Test functions to verify NEA API integration
+        
+        async function testTemperatureAPI() {
+            try {
+                logResult('🌡️ Testing Temperature API...', 'info');
+                const response = await fetch('https://api.data.gov.sg/v1/environment/air-temperature');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                logResult('✅ Temperature API Success', 'success');
+                
+                if (data.items && data.items[0] && data.items[0].readings) {
+                    const readings = data.items[0].readings;
+                    const temps = readings.map(r => `${r.station_id}: ${r.value}°C`);
+                    logResult(`📊 Found ${readings.length} temperature readings:
+${temps.slice(0, 5).join('\n')}${readings.length > 5 ? '\n...' : ''}`, 'info');
+                    
+                    const avgTemp = readings.reduce((sum, r) => sum + r.value, 0) / readings.length;
+                    logResult(`🌡️ Average Temperature: ${Math.round(avgTemp)}°C`, 'success');
+                } else {
+                    logResult('⚠️ Unexpected data format from Temperature API', 'error');
+                }
+                
+            } catch (error) {
+                logResult(`❌ Temperature API Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function test4DayForecast() {
+            try {
+                logResult('📅 Testing 4-Day Forecast API...', 'info');
+                const response = await fetch('https://api.data.gov.sg/v1/environment/4-day-weather-forecast');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                logResult('✅ 4-Day Forecast API Success', 'success');
+                
+                if (data.items && data.items[0] && data.items[0].forecasts) {
+                    const forecasts = data.items[0].forecasts;
+                    logResult(`📊 Found ${forecasts.length} forecast days`, 'info');
+                    
+                    forecasts.slice(0, 4).forEach((forecast, index) => {
+                        const temp = forecast.temperature;
+                        const tempRange = temp ? `${temp.low}°C - ${temp.high}°C` : 'No temp data';
+                        logResult(`Day ${index + 1} (${forecast.date}): ${forecast.forecast} | ${tempRange}`, 'info');
+                    });
+                } else {
+                    logResult('⚠️ Unexpected data format from 4-Day Forecast API', 'error');
+                }
+                
+            } catch (error) {
+                logResult(`❌ 4-Day Forecast API Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function test24HourForecast() {
+            try {
+                logResult('🕐 Testing 24-Hour Forecast API...', 'info');
+                const response = await fetch('https://api.data.gov.sg/v1/environment/24-hour-weather-forecast');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                logResult('✅ 24-Hour Forecast API Success', 'success');
+                
+                if (data.items && data.items[0] && data.items[0].general) {
+                    const general = data.items[0].general;
+                    logResult(`📊 Current Forecast: ${general.forecast || 'No forecast'}`, 'info');
+                    logResult(`💧 Humidity: ${JSON.stringify(general.relative_humidity) || 'No humidity data'}`, 'info');
+                    logResult(`💨 Wind: ${JSON.stringify(general.wind) || 'No wind data'}`, 'info');
+                } else {
+                    logResult('⚠️ Unexpected data format from 24-Hour Forecast API', 'error');
+                }
+                
+            } catch (error) {
+                logResult(`❌ 24-Hour Forecast API Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAllAPIs() {
+            logResult('🚀 Starting comprehensive weather API test...', 'info');
+            
+            try {
+                // Test all APIs in parallel
+                const [tempData, forecastData, todayData] = await Promise.all([
+                    fetch('https://api.data.gov.sg/v1/environment/air-temperature').then(r => r.json()),
+                    fetch('https://api.data.gov.sg/v1/environment/4-day-weather-forecast').then(r => r.json()),
+                    fetch('https://api.data.gov.sg/v1/environment/24-hour-weather-forecast').then(r => r.json())
+                ]);
+                
+                // Process the data (similar to ShoreSquad implementation)
+                const weatherData = processWeatherData(tempData, forecastData, todayData);
+                
+                logResult('✅ All APIs successful! Processing data...', 'success');
+                displayWeatherData(weatherData);
+                
+            } catch (error) {
+                logResult(`❌ Comprehensive test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function processWeatherData(tempData, forecastData, todayData) {
+            // Extract current temperature
+            let currentTemp = 26; // Default
+            if (tempData?.items?.[0]?.readings) {
+                const readings = tempData.items[0].readings;
+                const temperatures = readings.map(r => r.value);
+                currentTemp = Math.round(temperatures.reduce((sum, temp) => sum + temp, 0) / temperatures.length);
+            }
+            
+            // Extract current condition
+            let currentCondition = 'Partly Cloudy';
+            if (todayData?.items?.[0]?.general?.forecast) {
+                currentCondition = todayData.items[0].general.forecast;
+            }
+            
+            // Extract humidity
+            let humidity = 75;
+            if (todayData?.items?.[0]?.general?.relative_humidity) {
+                const humidityData = todayData.items[0].general.relative_humidity;
+                if (typeof humidityData === 'object') {
+                    humidity = humidityData.high || humidityData.low || 75;
+                } else if (typeof humidityData === 'string') {
+                    const parts = humidityData.split('-');
+                    humidity = parseInt(parts[1]) || parseInt(parts[0]) || 75;
+                }
+            }
+            
+            // Process forecast
+            let forecast = [];
+            if (forecastData?.items?.[0]?.forecasts) {
+                forecast = forecastData.items[0].forecasts.slice(0, 4).map((f, index) => {
+                    const dayName = index === 0 ? 'Today' : 
+                                   index === 1 ? 'Tomorrow' : 
+                                   new Date(f.date).toLocaleDateString('en-US', { weekday: 'short' });
+                    
+                    let avgTemp = 26;
+                    if (f.temperature && f.temperature.high && f.temperature.low) {
+                        avgTemp = Math.round((f.temperature.high + f.temperature.low) / 2);
+                    }
+                    
+                    return {
+                        day: dayName,
+                        temp: avgTemp,
+                        condition: f.forecast || 'Partly Cloudy'
+                    };
+                });
+            }
+            
+            return {
+                location: 'Singapore',
+                temperature: currentTemp,
+                condition: currentCondition,
+                humidity: humidity,
+                forecast: forecast
+            };
+        }
+        
+        function displayWeatherData(weather) {
+            const output = document.getElementById('weather-output');
+            
+            const forecastHTML = weather.forecast.map(day => 
+                `<div class="forecast-item">
+                    <strong>${day.day}</strong><br>
+                    ${day.temp}°C<br>
+                    <small>${day.condition}</small>
+                </div>`
+            ).join('');
+            
+            output.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h4>📍 ${weather.location}</h4>
+                    <p><strong>Temperature:</strong> ${weather.temperature}°C</p>
+                    <p><strong>Condition:</strong> ${weather.condition}</p>
+                    <p><strong>Humidity:</strong> ${weather.humidity}%</p>
+                </div>
+                <div class="forecast-grid">
+                    ${forecastHTML}
+                </div>
+            `;
+        }
+        
+        function logResult(message, type) {
+            const results = document.getElementById('results');
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'debug-section';
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = className;
+            resultDiv.innerHTML = `<pre>${message}</pre>`;
+            results.appendChild(resultDiv);
+            
+            // Auto-scroll to bottom
+            results.scrollTop = results.scrollHeight;
+            
+            // Also log to console for debugging
+            console.log(message);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('weather-output').innerHTML = '<p>Click "Test All APIs" to load weather data...</p>';
+        }
+        
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            logResult('🌤️ Weather API Test Page Loaded', 'info');
+            logResult('Ready to test NEA Singapore APIs...', 'info');
+        });
+    </script>
+</body>
+</html>

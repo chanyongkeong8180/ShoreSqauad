@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Test - ShoreSquad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f8ff;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .map-container {
+            margin: 20px 0;
+        }
+        #cleanup-map {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .log-container {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background: white;
+        }
+        .timer {
+            font-weight: bold;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.warning { background-color: #fff3cd; color: #856404; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌊 ShoreSquad Map Persistence Test</h1>
+        <p>This test verifies that the Google Maps iframe stays loaded and doesn't disappear after a few seconds.</p>
+        
+        <div class="timer" id="timer">Time elapsed: 0 seconds</div>
+        <div class="status" id="status">Initializing map test...</div>
+        
+        <div class="map-container">
+            <div id="cleanup-map" class="google-maps-embed">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3988.6211234567891!2d103.95357415!3d1.38149745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMjInNTMuNCJOIDEwM8KwNTcnMjAuMSJF!5e0!3m2!1sen!2ssg!4v1717300000000!5m2!1sen!2ssg"
+                    width="100%" 
+                    height="400" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Test Google Maps - Pasir Ris"
+                    aria-label="Google Maps showing Pasir Ris beach cleanup location">
+                </iframe>
+            </div>
+        </div>
+        
+        <div class="log-container">
+            <h3>Test Log</h3>
+            <div id="test-log"></div>
+        </div>
+    </div>
+
+    <script>
+        // Test script to monitor map behavior
+        let startTime = Date.now();
+        let logContainer = document.getElementById('test-log');
+        let statusDiv = document.getElementById('status');
+        let timerDiv = document.getElementById('timer');
+        
+        function log(message, type = 'info') {
+            const timestamp = Math.round((Date.now() - startTime) / 1000);
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<strong>[${timestamp}s]</strong> ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function updateStatus(message, type = 'info') {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+        
+        function updateTimer() {
+            const elapsed = Math.round((Date.now() - startTime) / 1000);
+            timerDiv.textContent = `Time elapsed: ${elapsed} seconds`;
+        }
+        
+        // Start timer
+        setInterval(updateTimer, 1000);
+        
+        // Monitor iframe
+        const iframe = document.querySelector('#cleanup-map iframe');
+        
+        if (iframe) {
+            log('✅ Google Maps iframe found in DOM');
+            updateStatus('Google Maps iframe detected - monitoring...', 'success');
+            
+            iframe.addEventListener('load', () => {
+                log('🎉 Google Maps iframe loaded successfully!');
+                updateStatus('✅ Google Maps loaded and persistent!', 'success');
+            });
+            
+            iframe.addEventListener('error', (e) => {
+                log('❌ Google Maps iframe failed to load');
+                updateStatus('❌ Google Maps failed to load', 'error');
+            });
+            
+            // Monitor if iframe gets removed from DOM
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.removedNodes.forEach((node) => {
+                        if (node === iframe || (node.nodeType === 1 && node.contains && node.contains(iframe))) {
+                            log('⚠️ Google Maps iframe was removed from DOM!');
+                            updateStatus('⚠️ Map was replaced - this indicates the issue!', 'warning');
+                        }
+                    });
+                });
+            });
+            
+            observer.observe(document.getElementById('cleanup-map'), {
+                childList: true,
+                subtree: true
+            });
+            
+            // Check periodically if iframe is still present
+            setInterval(() => {
+                const currentIframe = document.querySelector('#cleanup-map iframe');
+                if (!currentIframe) {
+                    log('❌ Google Maps iframe no longer exists in DOM');
+                    updateStatus('❌ Map disappeared - issue confirmed!', 'error');
+                } else if (currentIframe === iframe) {
+                    const elapsed = Math.round((Date.now() - startTime) / 1000);
+                    if (elapsed % 10 === 0) { // Log every 10 seconds
+                        log(`✅ Google Maps iframe still present (${elapsed}s)`);
+                    }
+                }
+            }, 1000);
+            
+        } else {
+            log('❌ No Google Maps iframe found in DOM');
+            updateStatus('❌ No iframe found', 'error');
+        }
+        
+        log('🚀 Map persistence test started');
+        
+        // Test for 30 seconds
+        setTimeout(() => {
+            const currentIframe = document.querySelector('#cleanup-map iframe');
+            if (currentIframe && currentIframe === iframe) {
+                log('🎉 TEST PASSED: Google Maps iframe persisted for 30+ seconds!');
+                updateStatus('🎉 TEST PASSED: Map is persistent!', 'success');
+            } else {
+                log('❌ TEST FAILED: Google Maps iframe was replaced or removed');
+                updateStatus('❌ TEST FAILED: Map disappeared', 'error');
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
