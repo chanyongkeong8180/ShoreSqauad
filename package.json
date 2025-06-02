@@ -1,0 +1,49 @@
+{
+  "name": "shoresquad",
+  "version": "1.0.0",
+  "description": "Rally your crew, track weather, and hit the next beach cleanup with our dope map app!",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server --port=5500 --host=127.0.0.1",
+    "dev": "npx live-server --port=5500 --host=127.0.0.1 --watch=.",
+    "build": "echo 'No build process needed for static site'",
+    "lint": "npx eslint js/app.js",
+    "format": "npx prettier --write '**/*.{html,css,js}'",
+    "validate": "npx html-validate index.html"
+  },
+  "keywords": [
+    "beach-cleanup",
+    "environmental",
+    "community",
+    "weather",
+    "maps",
+    "social",
+    "sustainability",
+    "ocean-conservation"
+  ],
+  "author": "ShoreSquad Team",
+  "license": "MIT",
+  "homepage": "https://github.com/username/shoresquad#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/username/shoresquad.git"
+  },
+  "bugs": {
+    "url": "https://github.com/username/shoresquad/issues"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "html-validate": "^8.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
