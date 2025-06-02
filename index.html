@@ -30,14 +30,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome for icons -->
+      <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0077be">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ShoreSquad">
     
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+    
+    <!-- Loading indicator for better mobile UX -->
+    <div id="loading-indicator" class="loading-indicator" aria-hidden="true">
+        <div class="loading-spinner"></div>
+        <p>Loading ShoreSquad...</p>
+    </div>
+    
     <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="nav-container">
@@ -66,7 +81,8 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero">
+    <section id="home" class="hero" role="main">
+        <main id="main">
         <div class="hero-content">
             <div class="container">
                 <h1 class="hero-title">Rally Your Crew,<br>Clean Our Shores</h1>
@@ -82,10 +98,10 @@
                     </button>
                 </div>
             </div>
-        </div>
-        <div class="hero-background">
+        </div>        <div class="hero-background">
             <div class="wave-animation"></div>
         </div>
+        </main>
     </section>
 
     <!-- Features Section -->
@@ -136,7 +152,10 @@
                         <h3>Find Beach Cleanups Near You</h3>
                         <p>Discover cleanup events in your area and make a local impact!</p>
                     </div>
-                    <button class="btn btn-primary btn-small" onclick="ShoreSquad.findNearbyCleanups()">Find Near Me</button>
+                    <button class="btn btn-primary btn-small find-near-btn" onclick="ShoreSquad.findNearbyCleanups()">
+                        <span class="btn-text-full">Find Near Me</span>
+                        <span class="btn-text-short">Find</span>
+                    </button>
                 </div>
             </div>
             <div class="map-container">                <div id="cleanup-map" class="google-maps-embed">
@@ -183,11 +202,11 @@
                             <input type="checkbox">
                             <span class="checkmark"></span>
                             Family Friendly
-                        </label>
-                        <label class="checkbox-label">
+                        </label>                        <label class="checkbox-label">
                             <input type="checkbox">
                             <span class="checkmark"></span>
-                            Large Groups (20+)
+                            <span class="filter-text-full">Large Groups (20+)</span>
+                            <span class="filter-text-short">Large Groups</span>
                         </label>
                     </div>
                     <div class="upcoming-events">

@@ -4,6 +4,23 @@
  */
 
 // ==========================================================================
+// Loading Management
+// ==========================================================================
+
+// Hide loading indicator when page is fully loaded
+window.addEventListener('load', function() {
+  const loadingIndicator = document.getElementById('loading-indicator');
+  if (loadingIndicator) {
+    setTimeout(() => {
+      loadingIndicator.classList.add('hidden');
+      setTimeout(() => {
+        loadingIndicator.style.display = 'none';
+      }, 500);
+    }, 800); // Small delay to ensure smooth transition
+  }
+});
+
+// ==========================================================================
 // Global Configuration and State
 // ==========================================================================
 
@@ -101,10 +118,12 @@ const ShoreSquad = {
     if (this.elements.newsletterForm) {
       this.elements.newsletterForm.addEventListener('submit', this.handleNewsletterSubmit.bind(this));
     }
-    
-    // Window events
+      // Window events
     window.addEventListener('scroll', this.throttle(this.handleScroll.bind(this), 16));
     window.addEventListener('resize', this.throttle(this.handleResize.bind(this), 100));
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', this.handleOutsideClick.bind(this));
     
     // Accessibility: keyboard navigation
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -138,9 +157,11 @@ ShoreSquad.toggleMobileNav = function() {
   
   if (isActive) {
     this.elements.navMenu.classList.remove('active');
+    this.elements.navToggle.classList.remove('active');
     this.elements.navToggle.setAttribute('aria-expanded', 'false');
   } else {
     this.elements.navMenu.classList.add('active');
+    this.elements.navToggle.classList.add('active');
     this.elements.navToggle.setAttribute('aria-expanded', 'true');
   }
 };
@@ -153,21 +174,35 @@ ShoreSquad.handleNavClick = function(event) {
     event.preventDefault();
     const targetId = href.substring(1);
     const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
+      if (targetElement) {
       // Close mobile nav if open
       this.elements.navMenu.classList.remove('active');
+      this.elements.navToggle.classList.remove('active');
       this.elements.navToggle.setAttribute('aria-expanded', 'false');
       
       // Smooth scroll to target
       const navHeight = document.querySelector('.navbar').offsetHeight;
       const targetPosition = targetElement.offsetTop - navHeight;
-      
-      window.scrollTo({
+        window.scrollTo({
         top: targetPosition,
         behavior: 'smooth'
       });
     }
+  }
+};
+
+ShoreSquad.handleOutsideClick = function(event) {
+  // Only handle if mobile nav is open
+  if (!this.elements.navMenu.classList.contains('active')) return;
+  
+  // Check if click is outside nav menu and nav toggle
+  const isClickInside = this.elements.navMenu.contains(event.target) || 
+                       this.elements.navToggle.contains(event.target);
+  
+  if (!isClickInside) {
+    this.elements.navMenu.classList.remove('active');
+    this.elements.navToggle.classList.remove('active');
+    this.elements.navToggle.setAttribute('aria-expanded', 'false');
   }
 };
 
@@ -908,20 +943,13 @@ ShoreSquad.addInteractiveMapControls = function() {
   }
   
   console.log('Adding interactive map controls...');
-  
-  // Add overlay controls without replacing the iframe
+    // Add overlay controls without replacing the iframe
   const controlsOverlay = document.createElement('div');
   controlsOverlay.className = 'map-controls-overlay';
   controlsOverlay.innerHTML = `
     <div class="map-overlay">
       <button class="map-control locate" aria-label="Find cleanups near me" onclick="ShoreSquad.findNearbyCleanups()">
         <i class="fas fa-crosshairs" aria-hidden="true"></i>
-      </button>
-      <button class="map-control refresh" aria-label="Refresh cleanup locations" onclick="ShoreSquad.refreshCleanupLocations()">
-        <i class="fas fa-sync-alt" aria-hidden="true"></i>
-      </button>
-      <button class="map-control filter" aria-label="Filter cleanups" onclick="ShoreSquad.toggleMapFilters()">
-        <i class="fas fa-filter" aria-hidden="true"></i>
       </button>
     </div>
   `;
@@ -967,8 +995,7 @@ ShoreSquad.loadInteractiveMapFallback = function() {
             </button>
           </div>
         </div>
-      `).join('')}
-    </div>
+      `).join('')}    </div>
     <div class="map-overlay">
       <button class="map-control zoom-in" aria-label="Zoom in" onclick="ShoreSquad.zoomIn()">
         <i class="fas fa-plus" aria-hidden="true"></i>
@@ -1144,25 +1171,6 @@ ShoreSquad.findNearbyCleanups = function() {
   }
   
   this.showNotification(`🌊 Found ${nearbyEvents.length} beach cleanups near you!`, 'success');
-};
-
-// Refresh cleanup locations
-ShoreSquad.refreshCleanupLocations = function() {
-  this.showNotification('🔄 Refreshing cleanup locations...', 'info');
-  
-  // Simulate data refresh
-  setTimeout(() => {
-    this.findNearbyCleanups();
-  }, 1000);
-};
-
-// Toggle map filters
-ShoreSquad.toggleMapFilters = function() {
-  const sidebar = document.querySelector('.map-sidebar');
-  if (sidebar) {
-    sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
-    this.showNotification('🔧 Use the sidebar filters to customize your view', 'info');
-  }
 };
 
 // Map zoom functions
@@ -1632,3 +1640,20 @@ ShoreSquad.handleSpecificWeatherError = function(error, apiType) {
   
   return errorMessage;
 };
+
+// ==========================================================================
+// Service Worker Registration for Progressive Web App
+// ==========================================================================
+
+// Register service worker for better mobile performance
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function(registration) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch(function(err) {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}

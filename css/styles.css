@@ -66,7 +66,10 @@
 }
 
 html {
+  font-size: 16px;
   scroll-behavior: smooth;
+  /* Prevent zoom on iOS when focusing inputs */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -76,6 +79,49 @@ body {
   color: var(--color-gray-dark);
   background-color: var(--color-white);
   overflow-x: hidden;
+  /* Smooth scrolling for mobile */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Performance and Accessibility Optimizations */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Smooth scrolling for all devices */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve performance on mobile devices */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Optimize font loading - Google Fonts already handles this */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #0066cc;
+    --color-secondary: #ff4444;
+    --color-accent: #00aa00;
+  }
 }
 
 /* ==========================================================================
@@ -107,6 +153,52 @@ a {
 
 a:hover, a:focus {
   color: var(--color-primary-dark);
+}
+
+/* ==========================================================================
+   Touch & Mobile Accessibility
+   ========================================================================== */
+
+/* Improve tap targets for touch devices */
+a, button, [role="button"], input, textarea, select {
+  touch-action: manipulation;
+}
+
+/* Ensure minimum tap target size of 44px for accessibility */
+.btn, .nav-toggle, .social-links a, button, input[type="submit"], input[type="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent text selection on UI elements */
+.btn, .nav-toggle, .nav-link {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Smooth focus for keyboard navigation */
+*:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Remove hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover,
+  .feature-card:hover,
+  .nav-link:hover,
+  .social-links a:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
+}
+
+/* Ensure proper scroll offset for fixed header navigation */
+section {
+  scroll-margin-top: 80px;
 }
 
 /* ==========================================================================
@@ -196,6 +288,12 @@ a:hover, a:focus {
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.9rem;
   white-space: nowrap;
+  /* Text overflow and wrapping fixes for mobile */
+  word-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.3;
+  min-height: auto;
+  padding: var(--spacing-xs) var(--spacing-sm);
 }
 
 /* ==========================================================================
@@ -244,6 +342,12 @@ a:hover, a:focus {
   border: none;
   cursor: pointer;
   padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.nav-toggle:hover {
+  background: rgba(0, 119, 190, 0.1);
 }
 
 .nav-toggle span {
@@ -251,7 +355,21 @@ a:hover, a:focus {
   height: 3px;
   background: var(--color-gray-dark);
   margin: 3px 0;
-  transition: var(--transition-fast);
+  transition: all var(--transition-fast);
+  border-radius: 2px;
+}
+
+/* Hamburger Animation */
+.nav-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .nav-menu {
@@ -442,14 +560,16 @@ a:hover, a:focus {
 
 .banner-text h3 {
   margin: 0 0 var(--spacing-xs) 0;
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+  line-height: 1.3;
+  margin-bottom: var(--spacing-xs);
 }
 
 .banner-text p {
   margin: 0;
   opacity: 0.9;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 /* Google Maps Embed */
@@ -472,6 +592,280 @@ a:hover, a:focus {
   grid-template-columns: 1fr 350px;
   gap: var(--spacing-lg);
   height: auto;
+  min-height: 400px;
+}
+
+/* Map sidebar styling */
+.map-sidebar {
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-lg);
+  height: fit-content;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Interactive Map Fallback */
+.map-content {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 119, 190, 0.9), rgba(52, 152, 219, 0.9));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-white);
+  text-align: center;
+  padding: var(--spacing-lg);
+}
+
+.map-title h4 {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-white);
+}
+
+.map-title p {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.map-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.map-marker {
+  position: absolute;
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.marker-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--color-secondary);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: markerPulse 2s ease-in-out infinite;
+}
+
+.marker-icon i {
+  transform: rotate(45deg);
+  color: var(--color-white);
+  font-size: 1rem;
+}
+
+@keyframes markerPulse {
+  0%, 100% { transform: rotate(-45deg) scale(1); }
+  50% { transform: rotate(-45deg) scale(1.1); }
+}
+
+.marker-popup {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-white);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  min-width: 200px;
+  text-align: center;
+  z-index: 20;
+}
+
+.map-marker:hover .marker-popup {
+  display: block;
+}
+
+.marker-popup h6 {
+  margin: 0 0 var(--spacing-xs) 0;
+  color: var(--color-gray-dark);
+  font-size: 1rem;
+}
+
+.marker-popup p {
+  margin: var(--spacing-xs) 0;
+  font-size: 0.85rem;
+  color: var(--color-gray-medium);
+}
+
+.map-controls-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.map-overlay {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  pointer-events: all;
+}
+
+.map-control {
+  width: 44px;
+  height: 44px;
+  background: var(--color-white);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+}
+
+.map-control:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  transform: scale(1.05);
+}
+
+.map-control:active {
+  transform: scale(0.95);
+}
+
+/* Map Pin Info Overlay */
+.map-pin-info {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pin-badge {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 250px;
+}
+
+.pin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  border-radius: 50%;
+  color: var(--color-white);
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.pin-content .pin-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  font-size: 1rem;
+  margin-bottom: var(--spacing-xs);
+  display: block;
+}
+
+.pin-content .pin-location {
+  color: var(--color-gray-dark);
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-xs);
+  display: block;
+}
+
+.pin-content .pin-coords {
+  color: var(--color-gray-medium);
+  font-size: 0.85rem;
+  margin-bottom: var(--spacing-xs);
+  display: block;
+}
+
+.pin-content .pin-date {
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Mobile responsive styles for pin info */
+@media (max-width: 768px) {
+  .map-pin-info {
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+  }
+  
+  .pin-badge {
+    padding: var(--spacing-sm);
+    max-width: none;
+  }
+  
+  .pin-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .pin-content .pin-title {
+    font-size: 0.9rem;
+  }
+  
+  .pin-content .pin-location {
+    font-size: 1rem;
+  }
+  
+  .pin-content .pin-coords,
+  .pin-content .pin-date {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-pin-info {
+    position: static;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .pin-badge {
+    margin-bottom: var(--spacing-sm);
+  }
 }
 
 /* ==========================================================================
@@ -800,29 +1194,46 @@ a:hover, a:focus {
 }
 
 /* ==========================================================================
-   Loading Spinner
+   Loading Indicator for Mobile Performance
    ========================================================================== */
 
-.loading-spinner {
+.loading-indicator {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.5s ease;
 }
 
-.spinner {
+.loading-indicator.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid var(--color-gray-light);
-  border-top: 4px solid var(--color-primary);
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid var(--color-white);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+.loading-indicator p {
+  color: var(--color-white);
+  font-size: 1.1rem;
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+  text-align: center;
 }
 
 @keyframes spin {
@@ -1237,7 +1648,183 @@ button:focus {
 }
 
 /* Responsive Weather Recommendations */
+/* ==========================================================================
+   RESPONSIVE DESIGN - Mobile First Approach
+   ========================================================================== */
+
+/* Large Tablets and Small Desktops */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+  
+  .community-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+    /* Map Container - Stack on tablets */
+  .map-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    min-height: 400px;
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .map-sidebar {
+    order: -1; /* Put sidebar above map on mobile */
+    max-height: none;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .map-section {
+    margin-bottom: var(--spacing-xxl);
+  }
+}
+
+/* Tablets and Large Mobile */
 @media (max-width: 768px) {
+  /* Navigation - Show hamburger menu */
+  .nav-toggle {
+    display: flex !important;
+  }
+    .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-lg);
+    gap: var(--spacing-sm);
+    z-index: 1001;
+  }
+  
+  .nav-menu.active {
+    display: flex;
+  }
+  
+  .nav-cta {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+    /* Hero Section */
+  .hero {
+    min-height: 60vh;
+    padding: var(--spacing-xl) 0;
+  }
+  
+  .hero-content {
+    text-align: center;
+    max-width: 100%;
+    padding-top: 80px; /* Account for fixed navbar on mobile */
+  }
+  
+  .hero-content h1 {
+    font-size: 2.2rem;
+    line-height: 1.3;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-lg);
+  }
+    .hero-buttons {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: center;
+  }
+  
+  .hero-buttons .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  /* Features Grid */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .feature-card {
+    padding: var(--spacing-lg);
+  }
+  /* Map Section */
+  .map-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    min-height: 350px;
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .map-sidebar {
+    order: -1;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .google-maps-embed {
+    min-height: 350px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .google-maps-embed iframe {
+    height: 350px;
+  }
+  
+  .map-section {
+    margin-bottom: var(--spacing-xxl);
+  }
+  
+  .map-controls {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .map-controls .btn {
+    width: 100%;
+  }
+    /* Weather Widget */
+  .weather-section {
+    padding-top: var(--spacing-xxl);
+  }
+  
+  .weather-widget {
+    padding: var(--spacing-md);
+  }
+  
+  .current-weather {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-md);
+  }
+  
+  .weather-icon {
+    order: -1;
+  }
+  
+  .forecast-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-sm);
+  }
+  
+  .forecast-item {
+    padding: var(--spacing-sm);
+  }
+  
+  /* Weather Recommendations */
   .recommendation-content {
     padding: var(--spacing-md);
   }
@@ -1257,9 +1844,157 @@ button:focus {
     padding-left: var(--spacing-md);
     font-size: 0.875rem;
   }
+    /* Community Stats */
+  .community-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .stat-card {
+    padding: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  /* About Section */
+  .about-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .about-buttons {
+    justify-content: center;
+  }
+  
+  /* Map Container */
+  .map-container {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  /* Footer */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .footer-section {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
 }
 
+/* Mobile Phones */
 @media (max-width: 480px) {
+  /* Base adjustments */
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  /* Typography scaling */
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.3rem; }
+  h4 { font-size: 1.1rem; }
+  
+  /* Navigation */
+  .navbar {
+    padding: var(--spacing-sm) 0;
+  }
+  
+  .brand-logo {
+    font-size: 1.2rem;
+  }
+  
+  .brand-logo i {
+    font-size: 1.4rem;
+  }
+    /* Hero Section */
+  .hero {
+    min-height: 50vh;
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .hero-content {
+    padding-top: 80px; /* Account for fixed navbar on mobile */
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .hero-content p {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  /* Features */
+  .feature-card {
+    padding: var(--spacing-md);
+  }
+  
+  .feature-card i {
+    font-size: 2rem;
+  }
+  
+  .feature-card h3 {
+    font-size: 1.1rem;
+    margin: var(--spacing-sm) 0;
+  }
+  /* Map Section */
+  .map-container {
+    height: auto;
+    margin-bottom: var(--spacing-xl);
+    min-height: 280px;
+    gap: var(--spacing-md);
+  }
+  
+  .google-maps-embed {
+    min-height: 280px;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .google-maps-embed iframe {
+    height: 280px;
+  }
+  
+  .map-sidebar {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .map-section {
+    margin-bottom: var(--spacing-xl);
+  }
+    /* Weather Widget */
+  .weather-section {
+    padding-top: var(--spacing-xxl);
+  }
+  
+  .weather-widget {
+    padding: var(--spacing-sm);
+  }
+  
+  .current-temp {
+    font-size: 2rem;
+  }
+  
+  .forecast-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  
+  .forecast-item {
+    padding: var(--spacing-xs);
+    font-size: 0.8rem;
+  }
+  
+  /* Weather Recommendations */
   .recommendation-header {
     padding: var(--spacing-md);
   }
@@ -1276,5 +2011,252 @@ button:focus {
   .recommendation-tips h5 {
     justify-content: center;
     font-size: 0.9rem;
+  }
+  
+  /* Community Stats */
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+  
+  .btn-large {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1rem;
+  }
+  
+  /* Forms */
+  .form-group {
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .form-control {
+    padding: var(--spacing-sm);
+    font-size: 1rem; /* Prevent zoom on iOS */
+  }
+  
+  /* Footer */
+  .footer-content {
+    gap: var(--spacing-md);
+  }
+  
+  .footer-section h4 {
+    font-size: 1rem;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .footer-section ul li {
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .footer-section ul li a {
+    font-size: 0.9rem;
+  }
+    .social-links a {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  /* Newsletter Form */
+  .newsletter-form {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .newsletter-form input {
+    font-size: 1rem; /* Prevent zoom on iOS */
+  }
+}
+
+/* Extra Small Mobile Phones */
+@media (max-width: 320px) {
+  .container {
+    padding: 0 var(--spacing-xs);
+  }
+  
+  .hero-content h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  
+  .hero-content p {
+    font-size: 0.85rem;
+  }
+  
+  .feature-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .forecast-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  
+  /* Fix filter label text cutoff on very small screens */
+  .checkbox-label {
+    font-size: 0.8rem;
+    line-height: 1.3;
+  }
+  
+  /* Banner text adjustments for very small screens */
+  .banner-text h3 {
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+  
+  .banner-text p {
+    font-size: 0.8rem;
+    display: none; /* Hide secondary text on very small screens to save space */
+  }
+  
+  /* Map sidebar improvements for tiny screens */
+  .map-sidebar {
+    padding: var(--spacing-sm);
+  }
+  
+  .map-sidebar h4 {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  /* Navigation improvements */
+  .nav-link {
+    font-size: 0.9rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  /* Pin info overlay adjustments */
+  .pin-badge {
+    padding: var(--spacing-xs);
+    max-width: 90%;
+  }
+}
+
+/* ==========================================================================
+   Keyboard Navigation and Focus Improvements
+   ========================================================================== */
+
+/* Enhanced focus styles for better accessibility */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Skip to content link for screen readers */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: 8px;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+  z-index: 9999;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  .mobile-nav-toggle,
+  .mobile-nav,
+  .map-container,
+  .weather-widget,
+  button {
+    display: none !important;
+  }
+  
+  .container {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .hero h1 {
+    font-size: 24pt !important;
+  }
+  
+  .hero p {
+    font-size: 12pt !important;
+  }
+  
+  .section {
+    page-break-inside: avoid;
+  }
+  
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  img {
+    max-width: 100% !important;
+  }
+}
+
+/* Responsive button text - show shorter version on very small screens */
+.find-near-btn .btn-text-short {
+  display: none;
+}
+
+.find-near-btn .btn-text-full {
+  display: inline;
+}
+
+/* Switch to shorter text on very small screens */
+@media (max-width: 360px) {
+  .find-near-btn .btn-text-short {
+    display: inline;
+  }
+  
+  .find-near-btn .btn-text-full {
+    display: none;
+  }
+}
+
+/* Responsive filter text - show shorter version on small screens */
+.checkbox-label .filter-text-short {
+  display: none;
+}
+
+.checkbox-label .filter-text-full {
+  display: inline;
+}
+
+/* Switch to shorter text on small screens */
+@media (max-width: 420px) {
+  .checkbox-label .filter-text-short {
+    display: inline;
+  }
+  
+  .checkbox-label .filter-text-full {
+    display: none;
   }
 }
