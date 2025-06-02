@@ -62,14 +62,12 @@
                     <span>ShoreSquad</span>
                 </a>
             </div>
-            
-            <button class="nav-toggle" aria-label="toggle navigation" aria-expanded="false">
+              <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            
-            <div class="nav-menu">
+              <div class="nav-menu" id="nav-menu">
                 <a href="#home" class="nav-link">Home</a>
                 <a href="#map" class="nav-link">Find Cleanups</a>
                 <a href="#weather" class="nav-link">Weather</a>
@@ -82,10 +80,8 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero" role="main">
-        <main id="main">
-        <div class="hero-content">
-            <div class="container">
-                <h1 class="hero-title">Rally Your Crew,<br>Clean Our Shores</h1>
+        <main id="main">        <div class="hero-content">
+            <div class="container">                <h1 class="hero-title">Rally Your Crew, Clean Our Shores</h1>
                 <p class="hero-subtitle">Track weather, find cleanup events, and connect with your squad to make beach cleanups fun and impactful!</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary btn-large">
@@ -145,20 +141,17 @@
     </section>    <!-- Map Section -->
     <section id="map" class="map-section">
         <div class="container">
-            <h2 class="section-title">Find Your Next Adventure</h2>            <div class="next-cleanup-banner">
+            <h2 class="section-title">Find Your Next Adventure</h2>            
+            <div class="next-cleanup-banner">
                 <div class="banner-content">
-                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                    <div class="banner-text">
-                        <h3>Find Beach Cleanups Near You</h3>
+                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i>                    <div class="banner-text">                        <h3>Find Beach Cleanups Near You</h3>
                         <p>Discover cleanup events in your area and make a local impact!</p>
-                    </div>
-                    <button class="btn btn-primary btn-small find-near-btn" onclick="ShoreSquad.findNearbyCleanups()">
-                        <span class="btn-text-full">Find Near Me</span>
-                        <span class="btn-text-short">Find</span>
+                    </div><button class="btn btn-primary btn-small find-near-btn" onclick="ShoreSquad.findNearbyCleanups()">
+                        Find Near Me
                     </button>
                 </div>
-            </div>
-            <div class="map-container">                <div id="cleanup-map" class="google-maps-embed">
+            </div>              <div class="map-container">
+                <div id="cleanup-map" class="google-maps-embed">
                     <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3988.6211234567891!2d103.95357415!3d1.38149745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwMjInNTMuNCJOIDEwM8KwNTcnMjAuMSJF!5e0!3m2!1sen!2ssg!4v1717300000000!5m2!1sen!2ssg"
                         width="100%" 
@@ -169,20 +162,8 @@
                         referrerpolicy="no-referrer-when-downgrade"
                         title="Next Beach Cleanup Location - Pasir Ris"
                         aria-label="Google Maps showing Pasir Ris beach cleanup location">
-                    </iframe>                    <!-- Enhanced location badge overlay -->
-                    <div class="map-pin-info">
-                        <div class="pin-badge">
-                            <div class="pin-icon">
-                                <i class="fas fa-search-location"></i>
-                            </div>
-                            <div class="pin-content">
-                                <span class="pin-title">🌊 Beach Cleanups</span>
-                                <strong class="pin-location">Interactive Map</strong>
-                                <small class="pin-coords">📍 Find events near you</small>
-                                <div class="pin-date">📅 Multiple dates available</div>
-                            </div>
-                        </div>
-                    </div>
+                    </iframe>
+                    <!-- Map pin info removed to prevent cutoff issues -->
                 </div>
                 <div class="map-sidebar">
                     <div class="search-box">
@@ -202,7 +183,8 @@
                             <input type="checkbox">
                             <span class="checkmark"></span>
                             Family Friendly
-                        </label>                        <label class="checkbox-label">
+                        </label>
+                        <label class="checkbox-label">
                             <input type="checkbox">
                             <span class="checkmark"></span>
                             <span class="filter-text-full">Large Groups (20+)</span>
