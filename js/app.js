@@ -715,6 +715,12 @@ ShoreSquad.renderEnhancedWeather = function(weather) {
   const weatherWidget = document.querySelector('.weather-widget');
   
   if (weatherWidget && recommendations) {
+    // Remove any existing recommendations to prevent duplicates
+    const existingRecommendations = weatherWidget.querySelector('.weather-recommendations');
+    if (existingRecommendations) {
+      existingRecommendations.remove();
+    }
+    
     const recommendationElement = document.createElement('div');
     recommendationElement.className = 'weather-recommendations';
     recommendationElement.innerHTML = `
